@@ -45,6 +45,13 @@ void getrev(int bit)
 
 void FFT(Complex *x, int n, int f)
 {
+	for (int i = 0; i < n; i++)
+	{
+		if (i < rev[i])
+		{
+			std::swap(x[i], x[rev[i]]);
+		}
+	}
 	for (int i = 1; i < n; i <<= 1)
 	{
 		Complex wn(cos(pi / i), f * sin(pi / i));
@@ -87,29 +94,23 @@ void solve(int l, int r)
 	{
 		xx[i] = yy[i] = Complex(0, 0);
 	}
-	puts("X");
 	for (int i = 0; i < n; i++)
 	{
-		printf("%d ", (point[l])[i]);
 		xx[i] = Complex((point[l])[i], 0);
 	}
-	puts("");
-	puts("Y");
 	for (int i = 0; i < m; i++)
 	{
-		printf("%d ", (point[mid + 1])[i]);
 		yy[i] = Complex((point[mid + 1])[i], 0);
 	}
-	puts("");
 	getrev(bit);
 	FFT(xx, s, 1);
 	FFT(yy, s, 1);
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < s; i++)
 	{
 		xx[i] = xx[i] * yy[i];
 	}
 	FFT(xx, s, -1);
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n + m; i++)
 	{
 		(point[l])[i] = (long long)(xx[i].real + 0.5) % M;
 	}
@@ -131,7 +132,7 @@ int main()
 		if (x[i] != x[i - 1])
 		{
 			s++;
-			point[s] = x + last;
+			point[s] = v + last;
 			for (int j = 0; j <= cnt; j++)
 			{
 				v[last] = 1;
@@ -145,13 +146,13 @@ int main()
 		}
 	}
 	s++;
-	point[s] = x + last;
+	point[s] = v + last;
 	for (int j = 0; j <= cnt; j++)
 	{
 		v[last] = 1;
 		last++;
 	}
-	point[s + 1] = point[s] + 1;
+	point[s + 1] = v + last;
 	cnt = 1;
 	solve(1, s);
 	printf("%d\n", (point[1])[k]);
